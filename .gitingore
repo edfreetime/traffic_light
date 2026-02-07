@@ -1,0 +1,28 @@
+# build output
+build/
+sdkconfig
+sdkconfig.old
+
+# caches
+.cache/
+
+# esp-idf generated
+dependencies.lock
+managed_components/
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+
+# editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
