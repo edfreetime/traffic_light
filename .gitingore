@@ -1,10 +1,12 @@
 # build output
 build/
+build
 sdkconfig
 sdkconfig.old
 
 # caches
 .cache/
+.cache
 
 # esp-idf generated
 dependencies.lock
