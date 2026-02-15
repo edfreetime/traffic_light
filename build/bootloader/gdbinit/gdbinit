@@ -1,2 +1,0 @@
-source /home/ed/projects/expr/esp32-traffic-light/traffic_light/build/bootloader/gdbinit/symbols
-source /home/ed/projects/expr/esp32-traffic-light/traffic_light/build/bootloader/gdbinit/connect

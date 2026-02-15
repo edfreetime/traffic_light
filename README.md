@@ -6,6 +6,7 @@ This is code base for traffic light controller embedded to ESP32.
 
 - ESP32 Development Board
 - LED RGY Module Board
+- Switch Button or Push Button
 - Breadboard (optional)
 
 ## Pins
@@ -14,7 +15,7 @@ This is code base for traffic light controller embedded to ESP32.
 - GPIO 25 (Red Light)
 - GPIO 26 (Yellow Light)
 - GPIO 27 (Green Light)
-- GPIO 33 (Button Input) using jumper connected to GND
+- GPIO 33 (Button Input) connected to GND
 
 ## Hardware Setup
 
@@ -22,10 +23,8 @@ This is code base for traffic light controller embedded to ESP32.
 - Connect ESP32 GPIO 25 to TL Red
 - Connect ESP32 GPIO 26 to TL Yellow
 - Connect ESP32 GPIO 27 to TL Green
-- Case 1 (w/o button):
-
-1. Connect ESP32 GND to Breadboard
-2. Connect ESP32 GPIO 33 to GND on step 1 to change Mode
+- Connect ESP32 GPIO 33 to Button pin
+- Connect ESP32 GND to Button pin
 
 ## Features
 

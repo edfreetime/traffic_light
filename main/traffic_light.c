@@ -12,11 +12,14 @@
 #define LED_RED GPIO_NUM_25
 #define LED_YELLOW GPIO_NUM_26
 #define LED_GREEN GPIO_NUM_27
-#define SOUND_PIN GPIO_NUM_33
+#define BUTTON_PIN GPIO_NUM_33
 
 // TL Modes
 typedef enum {
-    MODE_NORMAL, MODE_NIGHT
+    MODE_NORMAL = 0, 
+    MODE_NIGHT,
+    MODE_MAINTENANCE,
+    MODE_COUNT
 } tl_mode_t;
 
 // Sound sensor event
@@ -26,7 +29,7 @@ typedef enum {
 
 // TL States
 typedef enum {
-    TL_RED, TL_YELLOW, TL_GREEN, TL_YELLOW_BLINK
+    TL_RED, TL_YELLOW, TL_GREEN, TL_YELLOW_BLINK, TL_ALL_BLINK
 } tl_state_t;
 
 // Queue
@@ -64,6 +67,22 @@ void traffic_light_task(void *pvParameters) {
                 }
             }
 
+            if (state == TL_ALL_BLINK) {
+                int on = 0;
+
+                while (1) {
+                    on = !on;
+
+                    gpio_set_level(LED_RED, on);
+                    gpio_set_level(LED_GREEN, on);
+                    gpio_set_level(LED_YELLOW, on);
+
+                    if (xQueueReceive(tl_queue, &state, pdMS_TO_TICKS(500))) {
+                        break;
+                    }
+                }
+            }
+
             switch (state) {
                 case TL_RED:
                     // Lights On RED
@@ -90,22 +109,16 @@ void traffic_light_task(void *pvParameters) {
     }
 }
 
-#define TAG "SOUND"
-
-// Sound Task
-void sound_task(void *pvParameters) {
+// Button Task
+void button_task(void *pvParameters) {
     int last_state = 1;
 
     while (1) {
-        int current = gpio_get_level(SOUND_PIN);
-
-        ESP_LOGI(TAG, "DO level: %d", current);
+        int current = gpio_get_level(BUTTON_PIN);
 
         if (current == 0 && last_state == 1) {
             tl_event_t evt = EVENT_TOGGLE_MODE;
             xQueueSend(event_queue, &evt, portMAX_DELAY);
-
-            ESP_LOGI(TAG, "sound triggered");
         }
 
         last_state = current;
@@ -145,7 +158,7 @@ void controller_task(void *pvParameters) {
         // Check for non-pblocking event
         if (xQueueReceive(event_queue, &evt, 0)) {
             if (evt == EVENT_TOGGLE_MODE) {
-                mode = (mode == MODE_NORMAL) ? MODE_NIGHT : MODE_NORMAL;
+                mode = (mode + 1) % MODE_COUNT;
                 ESP_LOGI("CTRL", "Mode changed to %d", mode);
             }
         }
@@ -156,6 +169,12 @@ void controller_task(void *pvParameters) {
                 state = TL_YELLOW_BLINK;
                 xQueueSend(tl_queue, &state, 0);
             }
+
+            if (mode == MODE_MAINTENANCE) {
+                state = TL_ALL_BLINK;
+                xQueueSend(tl_queue, &state, 0);
+            }
+
             last_mode = mode;
         }
 
@@ -195,13 +214,13 @@ void app_main(void)
     };
     gpio_config(&io_conf);
 
-    // Configure Sound Sensor GPIO
-    gpio_config_t sound_conf = {
+    // Configure Button GPIO
+    gpio_config_t button_conf = {
         .mode = GPIO_MODE_INPUT,
-        .pin_bit_mask = (1ULL << SOUND_PIN),
+        .pin_bit_mask = (1ULL << BUTTON_PIN),
         .pull_up_en = 1,
     };
-    gpio_config(&sound_conf);
+    gpio_config(&button_conf);
 
     // Create queue
     tl_queue = xQueueCreate(1, sizeof(tl_state_t));
@@ -210,5 +229,5 @@ void app_main(void)
     // Create tasks
     xTaskCreate(traffic_light_task, "traffic_light", 2048, NULL, 5, NULL);
     xTaskCreate(controller_task, "controller", 4096, NULL, 6, NULL);
-    xTaskCreate(sound_task, "sound", 2048, NULL, 7, NULL);
+    xTaskCreate(button_task, "button", 2048, NULL, 7, NULL);
 }

@@ -1,12 +1,23 @@
 # build output
+/build/
 build/
-build
-sdkconfig
-sdkconfig.old
+/sdkconfig
+/sdkconfig.old
 
 # caches
+/.cache/
 .cache/
 .cache
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Ninja
+.ninja_deps
+.ninja_log
 
 # esp-idf generated
 dependencies.lock
