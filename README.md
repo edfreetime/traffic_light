@@ -42,3 +42,5 @@ Night Mode (first button click) and Maintenance Mode (second button click).
 - [x] Add other modes
 - [x] Add real button compatibility
 - [ ] Improve code base
+- [ ] Add LEDs for mode indicator
+- [ ] Integrate display module for interactive input
