@@ -28,11 +28,17 @@ This is code base for traffic light controller embedded to ESP32.
 
 ## Features
 
+Switch between mode mechanism:
+
+Push or click button to switch mode. Mode sequence is: Normal Mode (default),
+Night Mode (first button click) and Maintenance Mode (second button click).
+
 1. Normal Mode (RGY light sequence)
 2. Night Mode (Yellow light blinking)
+3. Maintenance Mode (All lights blinking)
 
 ## TODO
 
-- Add other modes
-- Add real button compatibility
-- Improve code base
+- [x] Add other modes
+- [x] Add real button compatibility
+- [ ] Improve code base
